@@ -6,9 +6,8 @@ const sqlConfig = require('../configs/sqlConfig.js');
 
 exports.getAllKontakts = asyncHandler(async (req, res, next) => {
   try {
-    let pool = await sql.connect(sqlConfig);
-    let result = await pool.request().query('select * from Kontakt');
-    res.send(result.recordset);
+    const query = await req.db.request().query('select * from Kontakt');
+    res.send(query.recordset);
   } catch (e) {
     console.log(e);
   }
@@ -16,25 +15,11 @@ exports.getAllKontakts = asyncHandler(async (req, res, next) => {
 
 exports.getKontakt = asyncHandler(async (req, res, next) => {
   try {
-    let pool = await sql.connect(sqlConfig);
-    let result = await pool
-      .request()
-      .input('nickname', sql.NVarChar, req.body.nickname)
-      .query(`SELECT * from Kontakt where nickname = @nickname`);
-    res.send(result.recordset);
-  } catch (e) {
-    console.log(e);
-  }
-});
-
-exports.getKontakt = asyncHandler(async (req, res, next) => {
-  try {
-    let pool = await sql.connect(sqlConfig);
-    let result = await pool
+    const query = await req.db
       .request()
       .input('kontaktId', sql.Int, req.body.kontaktId)
       .query(`SELECT * from Kontakt where kontaktId = @kontaktId`);
-    res.send(result.recordset);
+    res.send(query.recordset);
   } catch (e) {
     console.log(e);
   }
@@ -42,9 +27,8 @@ exports.getKontakt = asyncHandler(async (req, res, next) => {
 
 exports.addKontakt = asyncHandler(async (req, res, next) => {
   try {
-    let pool = await sql.connect(sqlConfig);
     let kontaktData = new kontaktModel(req.body);
-    let result = await pool
+    let query = await req.db
       .request()
       .input('kontaktId', sql.Int, kontaktData.kontaktId)
       .input('nickname', sql.NVarChar, kontaktData.nickname)
@@ -64,7 +48,7 @@ exports.addKontakt = asyncHandler(async (req, res, next) => {
         @email
         )
       `);
-    res.send(result.recordset);
+    res.send(query.recordset);
   } catch (e) {
     console.log(e);
   }
@@ -72,22 +56,32 @@ exports.addKontakt = asyncHandler(async (req, res, next) => {
 
 exports.updateKontakt = asyncHandler(async (req, res, next) => {
   try {
-    let pool = await sql.connect(sqlConfig);
-    let selectQuery = await pool
-    .request()
-    .input('kontaktId', sql.Int, req.body.kontaktId)
-    .query(`SELECT * from Kontakt where kontaktId = @kontaktId`);
+    let selectQuery = await req.db
+      .request()
+      .input('kontaktId', sql.Int, req.body.kontaktId)
+      .query(`SELECT * from Kontakt where kontaktId = @kontaktId`);
     let oldData = new kontaktModel(selectQuery.recordset[0]);
     let newData = new kontaktModel(req.body);
-    let result = await pool
+    let query = await req.db
       .request()
       .input('kontaktId', sql.Int, newData.kontaktId)
       .input('nickname', sql.NVarChar, newData.nickname || oldData.nickname)
-      .input('kontaktName', sql.NVarChar, newData.kontaktName || oldData.kontaktName)
-      .input('kontaktSurname', sql.NVarChar, newData.kontaktSurname || oldData.kontaktSurname)
-      .input('mobileNumber', sql.NVarChar, newData.mobileNumber || oldData.mobileNumber)
-      .input('email', sql.NVarChar, newData.email || oldData.email)
-      .query(`
+      .input(
+        'kontaktName',
+        sql.NVarChar,
+        newData.kontaktName || oldData.kontaktName
+      )
+      .input(
+        'kontaktSurname',
+        sql.NVarChar,
+        newData.kontaktSurname || oldData.kontaktSurname
+      )
+      .input(
+        'mobileNumber',
+        sql.NVarChar,
+        newData.mobileNumber || oldData.mobileNumber
+      )
+      .input('email', sql.NVarChar, newData.email || oldData.email).query(`
         Update Kontakt
         Set
         nickname = @nickname,
@@ -97,7 +91,7 @@ exports.updateKontakt = asyncHandler(async (req, res, next) => {
         email = @email
         where kontaktId = @kontaktId
       `);
-      res.send(result.recordset)
+    res.send(query.recordset);
   } catch (e) {
     console.log(e);
   }
@@ -105,28 +99,13 @@ exports.updateKontakt = asyncHandler(async (req, res, next) => {
 
 exports.deleteKontakt = asyncHandler(async (req, res, next) => {
   try {
-    let pool = await sql.connect(sqlConfig);
     let kontaktData = new kontaktModel(req.body);
-    let result = await pool
+    let query = await req.db
       .request()
       .input('kontaktId', sql.Int, kontaktData.kontaktId)
-      .query('Delete from Kontakt where kontaktId = @kontaktId')
-    res.send(result.recordset);
+      .query('Delete from Kontakt where kontaktId = @kontaktId');
+    res.send(query.recordset);
   } catch (e) {
     console.log(e);
   }
-})
-
-exports.deleteKontakt = asyncHandler(async (req, res, next) => {
-  try {
-    let pool = await sql.connect(sqlConfig);
-    let kontaktData = new kontaktModel(req.body);
-    let result = await pool
-      .request()
-      .input('nickname', sql.Int, kontaktData.kontaktId)
-      .query('Delete from Kontakt where nickname = @nickname')
-    res.send(result.recordset);
-  } catch (e) {
-    console.log(e);
-  }
-})
+});

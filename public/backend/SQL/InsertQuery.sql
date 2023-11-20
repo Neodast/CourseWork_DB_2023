@@ -1,7 +1,25 @@
 USE test123
 
-INSERT INTO Kontakt (kontaktId, nickname, kontaktName, kontaktSurname, mobileNumber, email)
+INSERT INTO Contact
+(contactId, nickname, contactName, contactSurname, mobileNumber, email, companyName, companyPosition)
 VALUES
-(1,Null,'Andriy','Koguhov','+380696969691','shariiKoguh@donni.bolno'),
-(2,'Olga','Oleg','Koguhov','+380696969692','olegKoguh@donni.bolno'),
-(3,Null,'Donni','Koguhov','+380696969693','papaDavai@donni.bolno')
+(1,'Adr_228','Andriy','Koguhov','+380696969691','str@gmail.com','PolitechKONTORA','Lecturer')
+select * from Contact
+
+insert into ContactsGroup
+(groupId, groupName, contactId)
+VALUES
+(1, 'Family', 1)
+select * from ContactsGroup
+
+insert into SocialNetwork
+(snId, snName, snLink, contactId)
+VALUES
+(1, 'Twitter', 'http//:someLink', 1)
+select * from SocialNetwork
+
+insert into Call
+(callId, callDate, isResponce, callTime, contactId)
+VALUES
+(1,'2023-11-20 00:31:42',1,'0:12:40',1)
+select * from Call
