@@ -6,7 +6,7 @@ const sql = require('mssql');
 const bodyParser = require('body-parser');
 //progect packeges
 const sqlConfig = require('./public/backend/configs/sqlConfig');
-const router = require('./public/backend/routes/kontaktRoutes');
+const router = require('./public/backend/routes/router');
 //const values
 const port = 5000;
 let db;

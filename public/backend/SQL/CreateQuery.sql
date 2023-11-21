@@ -32,9 +32,9 @@ drop table SocialNetwork
 
 CREATE table Call (
   callId int not null primary key,
-  callDate DATETIME not null,
+  callDate DATE not null,
   isResponce BIT not null,
-  callTime TIME(7),
+  callTime NVARCHAR(10),
   contactId int REFERENCES Contact(contactId)
 );
 

@@ -21,5 +21,7 @@ select * from SocialNetwork
 insert into Call
 (callId, callDate, isResponce, callTime, contactId)
 VALUES
-(1,'2023-11-20 00:31:42',1,'0:12:40',1)
+(1,'2023-11-20 00:31:42',1,'00:12:40',1)
 select * from Call
+
+delete from Call where callId = 1
