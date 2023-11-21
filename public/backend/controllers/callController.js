@@ -70,7 +70,6 @@ exports.updateCall = asyncHandler(async (req, res, next) => {
       .query(`
       Update Call
       Set
-      callId = @callId,
       callDate = @callDate,
       isResponce = @isResponce,
       callTime = @callTime,
