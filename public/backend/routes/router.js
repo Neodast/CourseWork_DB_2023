@@ -4,7 +4,7 @@ const router = express.Router();
 const contactController = require('../controllers/contactController.js');
 const callController = require('../controllers/callController.js');
 const socialNetworkController = require('../controllers/socialNetworkController.js');
-const contactsGroupController = require('../controllers/contactsGroupController.js');
+const contactGroupController = require('../controllers/contactGroupController.js');
 
 //Contact CRUDs
 
@@ -18,7 +18,11 @@ router.put('/contact', contactController.updateContact);
 
 router.delete('/contact', contactController.deleteContact);
 
-//Call CRUDs
+//*Contact Oreders
+
+router.get('/contacts/OrderBy', contactController.OrderContacts);
+
+//*Call CRUDs
 
 router.get('/calls', callController.getCalls);
 
@@ -29,6 +33,10 @@ router.post('/call', callController.addCall);
 router.put('/call', callController.updateCall);
 
 router.delete('/call', callController.deleteCall);
+
+//*Call Orders
+
+router.get('/calls/OrderBy', callController.OrderCalls);
 
 //SocialNetwork CRUDs
 
@@ -42,16 +50,24 @@ router.put('/socialNetwork', socialNetworkController.updateSocialNetwork);
 
 router.delete('/socialNetwork', socialNetworkController.deleteSocialNetwork);
 
-//ContactsGroup CRUDs
+//*SocialNetwork Orders
 
-router.get('/contactsGroups', contactsGroupController.getContactsGroups);
+router.get('/networks/OrderBy', socialNetworkController.OrderNetworks);
 
-router.get('/contactsGroup', contactsGroupController.getContactsGroup);
+//ContactGroup CRUDs
 
-router.post('/contactsGroup', contactsGroupController.addContactsGroup);
+router.get('/groups', contactGroupController.getContactGroups);
 
-router.put('/contactsGroup', contactsGroupController.updateContactsGroup);
+router.get('/group', contactGroupController.getContactGroup);
 
-router.delete('/contactsGroup', contactsGroupController.deleteContactsGroup);
+router.post('/group', contactGroupController.addContactGroup);
+
+router.put('/group', contactGroupController.updateContactGroup);
+
+router.delete('/group', contactGroupController.deleteContactGroup);
+
+//*Group Orders
+
+router.get('/groups/OrderBy', contactGroupController.OrderGroups);
 
 module.exports = router;

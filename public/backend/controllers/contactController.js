@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler');
 const sql = require('mssql');
 
 const contactModel = require('../models/contactModel.js');
+const sortModel = require('../models/sortModel.js');
 
 exports.getContacts = asyncHandler(async (req, res, next) => {
   try {
@@ -124,6 +125,20 @@ exports.deleteContact = asyncHandler(async (req, res, next) => {
       Delete from ContactsGroup where contactId = @contactId
       Delete from SocialNetwork where contactId = @contactId
       Delete from Contact where contactId = @contactId
+      `);
+    res.send(query.recordset);
+  } catch (e) {
+    console.log(e);
+  }
+});
+
+//*Orders
+
+exports.OrderContacts = asyncHandler(async (req, res, next) => {
+  try {
+    const contactData = new sortModel(req.body);
+    const query = await req.db.request().query(`
+        select * from Contact order by ${contactData.SortBy}
       `);
     res.send(query.recordset);
   } catch (e) {

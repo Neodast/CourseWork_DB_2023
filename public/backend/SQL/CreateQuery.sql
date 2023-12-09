@@ -1,4 +1,4 @@
-USE test123
+USE Contact
 
 CREATE TABLE Contact (
   contactId Int NOT NULL PRIMARY KEY,

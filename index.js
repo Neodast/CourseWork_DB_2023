@@ -21,7 +21,7 @@ app.use(express.static('public'));
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use( function(req, res, next) {
+app.use(function (req, res, next) {
   req.db = db;
   next();
 });
@@ -30,6 +30,6 @@ app.use( function(req, res, next) {
 app.use('/', router);
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}!`)
+  console.log(`Example app listening on port ${port}!`);
   sqlConnect();
 });

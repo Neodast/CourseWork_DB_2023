@@ -1,7 +1,7 @@
 const sqlConfig = {
-  user: 'sa',
+  user: 'neodast_',
   password: 'pass',
-  database: 'test123',
+  database: 'Contact',
   server: 'localhost',
   pool: {
     max: 10,

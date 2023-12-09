@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler');
 const sql = require('mssql');
 
 const snModel = require('../models/socialNetworkModel.js');
+const sortModel = require('../models/sortModel.js');
 
 exports.getSocialNetworks = asyncHandler(async (req, res, next) => {
   try {
@@ -83,6 +84,20 @@ exports.deleteSocialNetwork = asyncHandler(async (req, res, next) => {
       .query(`
       Delete from SocialNetwork where snId = @snId
     `);
+    res.send(query.recordset);
+  } catch (e) {
+    console.log(e);
+  }
+});
+
+//*Orders
+
+exports.OrderNetworks = asyncHandler(async (req, res, next) => {
+  try {
+    const networkData = new sortModel(req.body);
+    const query = await req.db.request().query(`
+        select * from SocialNetwork order by ${networkData.SortBy}
+      `);
     res.send(query.recordset);
   } catch (e) {
     console.log(e);

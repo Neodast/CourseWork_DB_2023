@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler');
 const sql = require('mssql');
 
 const callModel = require('../models/callModel.js');
+const sortModel = require('../models/sortModel.js');
 
 exports.getCalls = asyncHandler(async (req, res, next) => {
   try {
@@ -89,6 +90,22 @@ exports.deleteCall = asyncHandler(async (req, res, next) => {
       .input('callId', sql.Int, callData.callId).query(`
       Delete from Call where callId = @callId
     `);
+    res.send(query.recordset);
+  } catch (e) {
+    console.log(e);
+  }
+});
+
+//*Orders
+
+exports.OrderCalls = asyncHandler(async (req, res, next) => {
+  try {
+    const callData = new sortModel(req.body);
+    const query = await req.db
+      .request()
+      .query(`
+        select * from Call order by ${callData.SortBy}
+      `)
     res.send(query.recordset);
   } catch (e) {
     console.log(e);

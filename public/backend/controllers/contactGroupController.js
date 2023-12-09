@@ -2,8 +2,9 @@ const asyncHandler = require('express-async-handler');
 const sql = require('mssql');
 
 const groupModel = require('../models/contactsGroupModel.js');
+const sortModel =  require('../models/sortModel.js')
 
-exports.getContactsGroups = asyncHandler(async (req, res, next) => {
+exports.getContactGroups = asyncHandler(async (req, res, next) => {
   try {
     const query = await req.db.request().query(`select * from ContactsGroup`);
     res.send(query.recordset);
@@ -12,7 +13,7 @@ exports.getContactsGroups = asyncHandler(async (req, res, next) => {
   }
 });
 
-exports.getContactsGroup = asyncHandler(async (req, res, next) => {
+exports.getContactGroup = asyncHandler(async (req, res, next) => {
   try {
     const groupData = new groupModel(req.body);
     const query = await req.db
@@ -25,7 +26,7 @@ exports.getContactsGroup = asyncHandler(async (req, res, next) => {
   }
 });
 
-exports.addContactsGroup = asyncHandler(async (req, res, next) => {
+exports.addContactGroup = asyncHandler(async (req, res, next) => {
   try {
     const groupData = new groupModel(req.body);
     const query = await req.db
@@ -48,7 +49,7 @@ exports.addContactsGroup = asyncHandler(async (req, res, next) => {
   }
 });
 
-exports.updateContactsGroup = asyncHandler(async (req, res, next) => {
+exports.updateContactGroup = asyncHandler(async (req, res, next) => {
   try {
     const newData = new groupModel(req.body);
     const selectQuery = await req.db
@@ -72,7 +73,7 @@ exports.updateContactsGroup = asyncHandler(async (req, res, next) => {
   }
 });
 
-exports.deleteContactsGroup = asyncHandler(async (req, res, next) => {
+exports.deleteContactGroup = asyncHandler(async (req, res, next) => {
   try {
     const groupData = new groupModel(req.body);
     const query = await req.db
@@ -80,6 +81,20 @@ exports.deleteContactsGroup = asyncHandler(async (req, res, next) => {
       .input('groupId', sql.Int, groupData.groupId).query(`
       Delete from ContactsGroup where groupId = @groupId
     `);
+    res.send(query.recordset);
+  } catch (e) {
+    console.log(e);
+  }
+});
+
+//*Orders
+
+exports.OrderGroups = asyncHandler(async (req, res, next) => {
+  try {
+    const groupData = new sortModel(req.body);
+    const query = await req.db.request().query(`
+        select * from ContactsGroup order by ${groupData.SortBy}
+      `);
     res.send(query.recordset);
   } catch (e) {
     console.log(e);
