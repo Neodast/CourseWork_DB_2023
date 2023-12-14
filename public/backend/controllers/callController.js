@@ -3,6 +3,8 @@ const sql = require('mssql');
 
 const callModel = require('../models/callModel.js');
 const sortModel = require('../models/sortModel.js');
+const filterModel = require('../models/filterModel.js');
+const { query } = require('express');
 
 exports.getCalls = asyncHandler(async (req, res, next) => {
   try {
@@ -101,11 +103,36 @@ exports.deleteCall = asyncHandler(async (req, res, next) => {
 exports.OrderCalls = asyncHandler(async (req, res, next) => {
   try {
     const callData = new sortModel(req.body);
-    const query = await req.db
-      .request()
-      .query(`
+    const query = await req.db.request().query(`
         select * from Call order by ${callData.SortBy}
-      `)
+      `);
+    res.send(query.recordset);
+  } catch (e) {
+    console.log(e);
+  }
+});
+
+//*Filters
+
+exports.FilterCalls = asyncHandler(async (req, res, next) => {
+  try {
+    const callFilters = new filterModel(req.body);
+    const query = await req.db.request().query(`
+      DECLARE @i INT = 1;
+
+      WHILE @i <= ${callFilters.filter.length}
+        BEGIN
+          PRINT (@i);
+          SET @i = @i + 10;
+
+          IF @i = 30 BREAK;
+        END;
+
+      select * from Call
+      where ${Object.keys(callFilters.filter)} = ${
+      callFilters.filter[`${Object.keys(callFilters.filter)}`]
+    }
+    `);
     res.send(query.recordset);
   } catch (e) {
     console.log(e);

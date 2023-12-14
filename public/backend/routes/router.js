@@ -6,7 +6,7 @@ const callController = require('../controllers/callController.js');
 const socialNetworkController = require('../controllers/socialNetworkController.js');
 const contactGroupController = require('../controllers/contactGroupController.js');
 
-//Contact CRUDs
+//!Contact CRUDs
 
 router.get('/contacts', contactController.getContacts);
 
@@ -22,7 +22,7 @@ router.delete('/contact', contactController.deleteContact);
 
 router.get('/contacts/OrderBy', contactController.OrderContacts);
 
-//*Call CRUDs
+//!Call CRUDs
 
 router.get('/calls', callController.getCalls);
 
@@ -38,7 +38,11 @@ router.delete('/call', callController.deleteCall);
 
 router.get('/calls/OrderBy', callController.OrderCalls);
 
-//SocialNetwork CRUDs
+//*Call Filters
+
+router.get('/calls/FilterBy', callController.FilterCalls);
+
+//!SocialNetwork CRUDs
 
 router.get('/socialNetworks', socialNetworkController.getSocialNetworks);
 
@@ -54,7 +58,7 @@ router.delete('/socialNetwork', socialNetworkController.deleteSocialNetwork);
 
 router.get('/networks/OrderBy', socialNetworkController.OrderNetworks);
 
-//ContactGroup CRUDs
+//!ContactGroup CRUDs
 
 router.get('/groups', contactGroupController.getContactGroups);
 
