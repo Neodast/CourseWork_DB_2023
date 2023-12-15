@@ -6,16 +6,16 @@ const sortModel = require('../models/sortModel.js');
 const filterModel = require('../models/filterModel.js');
 const { query } = require('express');
 
-exports.getCalls = asyncHandler(async (req, res, next) => {
+exports.getCalls = async (req, res, next) => {
   try {
     const query = await req.db.request().query('select * from Call');
     res.send(query.recordset);
   } catch (e) {
     console.log(e);
   }
-});
+};
 
-exports.getCall = asyncHandler(async (req, res, next) => {
+exports.getCall = async (req, res, next) => {
   try {
     const callData = new callModel(req.body);
     const query = await req.db
@@ -26,9 +26,9 @@ exports.getCall = asyncHandler(async (req, res, next) => {
   } catch (e) {
     console.log(e);
   }
-});
+};
 
-exports.addCall = asyncHandler(async (req, res, next) => {
+exports.addCall = async (req, res, next) => {
   try {
     const callData = new callModel(req.body);
     const query = await req.db
@@ -53,9 +53,9 @@ exports.addCall = asyncHandler(async (req, res, next) => {
   } catch (e) {
     console.log(e);
   }
-});
+};
 
-exports.updateCall = asyncHandler(async (req, res, next) => {
+exports.updateCall = async (req, res, next) => {
   try {
     const newData = new callModel(req.body);
     const selectQuery = await req.db
@@ -82,9 +82,9 @@ exports.updateCall = asyncHandler(async (req, res, next) => {
   } catch (e) {
     console.log(e);
   }
-});
+};
 
-exports.deleteCall = asyncHandler(async (req, res, next) => {
+exports.deleteCall = async (req, res, next) => {
   try {
     const callData = new callModel(req.body);
     const query = await req.db
@@ -96,11 +96,11 @@ exports.deleteCall = asyncHandler(async (req, res, next) => {
   } catch (e) {
     console.log(e);
   }
-});
+};
 
 //*Orders
 
-exports.OrderCalls = asyncHandler(async (req, res, next) => {
+exports.OrderCalls = async (req, res, next) => {
   try {
     const callData = new sortModel(req.body);
     const query = await req.db.request().query(`
@@ -110,11 +110,11 @@ exports.OrderCalls = asyncHandler(async (req, res, next) => {
   } catch (e) {
     console.log(e);
   }
-});
+};
 
 //*Filters
 
-exports.FilterCalls = asyncHandler(async (req, res, next) => {
+exports.FilterCalls = async (req, res, next) => {
   try {
     const callFilters = new filterModel(req.body);
     const query = await req.db.request().query(`
@@ -137,4 +137,4 @@ exports.FilterCalls = asyncHandler(async (req, res, next) => {
   } catch (e) {
     console.log(e);
   }
-});
+};

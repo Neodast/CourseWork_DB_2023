@@ -62,7 +62,9 @@ router.get('/networks/OrderBy', socialNetworkController.OrderNetworks);
 
 router.get('/groups', contactGroupController.getContactGroups);
 
-router.get('/group', contactGroupController.getContactGroup);
+router.get('/group/members', contactGroupController.getContactGroupMembers);
+
+router.get('/group', contactGroupController.getContactGroupInfo);
 
 router.post('/group', contactGroupController.addContactGroup);
 

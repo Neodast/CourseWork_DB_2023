@@ -8,24 +8,24 @@ CREATE TABLE Contact (
   mobileNumber NVARCHAR(50),
   email NVARCHAR(50),
   companyName NVARCHAR(50),
-  companyPosition NVARCHAR(50)
+  companyPosition NVARCHAR(50),
+  groupId int REFERENCES ContactGroup (groupId),
+  snId int REFERENCES SocialNetwork (snId)
 );
 
 drop TABLE Contact;
 
-CREATE TABLE ContactsGroup (
+CREATE TABLE ContactGroup (
   groupId Int NOT NULL PRIMARY KEY,
-  groupName NVARCHAR(50),
-  contactId Int REFERENCES Contact(contactId)
+  groupName NVARCHAR(50)
 );
 
-drop table ContactsGroup
+drop table ContactGroup
 
 Create table SocialNetwork (
   snId int not null PRIMARY KEY,
   snName NVARCHAR(50) NOT NULL,
-  snLink NVARCHAR(50) NOT NULL,
-  contactId int REFERENCES Contact(contactId)
+  snLink NVARCHAR(50) NOT NULL
 );
 
 drop table SocialNetwork
@@ -35,7 +35,7 @@ CREATE table Call (
   callDate DATE not null,
   isResponce BIT not null,
   callTime NVARCHAR(10),
-  contactId int REFERENCES Contact(contactId)
+  contactId int REFERENCES Contact (contactId),
 );
 
 drop table Call

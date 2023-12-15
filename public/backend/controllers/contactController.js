@@ -4,44 +4,45 @@ const sql = require('mssql');
 const contactModel = require('../models/contactModel.js');
 const sortModel = require('../models/sortModel.js');
 
-exports.getContacts = asyncHandler(async (req, res, next) => {
+exports.getContacts = async (req, res, next) => {
   try {
     const query = await req.db.request().query('select * from Contact');
     res.send(query.recordset);
   } catch (e) {
     console.log(e);
   }
-});
+};
 
-exports.getContact = asyncHandler(async (req, res, next) => {
+exports.getContact = async (req, res, next) => {
   try {
-    const contactData = new contactModel(req.body);
+    const data = new contactModel(req.body);
     const query = await req.db
       .request()
-      .input('contactId', sql.Int, contactData.contactId)
+      .input('contactId', sql.Int, data.contactId)
       .query(`SELECT * from Contact where contactId = @contactId`);
     res.send(query.recordset);
   } catch (e) {
     console.log(e);
   }
-});
+};
 
-exports.addContact = asyncHandler(async (req, res, next) => {
+exports.addContact = async (req, res, next) => {
   try {
-    const contactData = new contactModel(req.body);
+    const data = new contactModel(req.body);
     const query = await req.db
       .request()
-      .input('contactId', sql.Int, contactData.contactId)
-      .input('nickname', sql.NVarChar, contactData.nickname)
-      .input('contactName', sql.NVarChar, contactData.contactName)
-      .input('contactSurname', sql.NVarChar, contactData.contactSurname)
-      .input('mobileNumber', sql.NVarChar, contactData.mobileNumber)
-      .input('email', sql.NVarChar, contactData.email)
-      .input('companyName', sql.NVarChar, contactData.companyName)
-      .input('companyPosition', sql.NVarChar, contactData.companyPosition)
-      .query(`
+      .input('contactId', sql.Int, data.contactId)
+      .input('nickname', sql.NVarChar, data.nickname)
+      .input('contactName', sql.NVarChar, data.contactName)
+      .input('contactSurname', sql.NVarChar, data.contactSurname)
+      .input('mobileNumber', sql.NVarChar, data.mobileNumber)
+      .input('email', sql.NVarChar, data.email)
+      .input('companyName', sql.NVarChar, data.companyName)
+      .input('companyPosition', sql.NVarChar, data.companyPosition)
+      .input('groupId', sql.Int, data.groupId)
+      .input('snId', sql.Int, data.snId).query(`
         Insert into Contact
-        (contactId, nickname, contactName, contactSurname, mobileNumber, email, companyName, companyPosition)
+        (contactId, nickname, contactName, contactSurname, mobileNumber, email, companyName, companyPosition, groupId, snId)
         values
         (
         @contactId,
@@ -51,16 +52,18 @@ exports.addContact = asyncHandler(async (req, res, next) => {
         @mobileNumber,
         @email,
         @companyName,
-        @companyPosition
+        @companyPosition,
+        @groupId,
+        @snId
         )
       `);
     res.send(query.recordset);
   } catch (e) {
     console.log(e);
   }
-});
+};
 
-exports.updateContact = asyncHandler(async (req, res, next) => {
+exports.updateContact = async (req, res, next) => {
   try {
     const newData = new contactModel(req.body);
     const selectQuery = await req.db
@@ -97,7 +100,9 @@ exports.updateContact = asyncHandler(async (req, res, next) => {
         'companyPosition',
         sql.NVarChar,
         newData.companyPosition || oldData.companyPosition
-      ).query(`
+      )
+      .input('groupId', sql.Int, newData.groupId || oldData.groupId)
+      .input('snId', sql.Int, newData.snId || oldData.snId).query(`
         Update Contact
         Set
         nickname = @nickname,
@@ -106,42 +111,41 @@ exports.updateContact = asyncHandler(async (req, res, next) => {
         mobileNumber = @mobileNumber,
         email = @email,
         companyName = @companyName,
-        companyPosition = @companyPosition
+        companyPosition = @companyPosition,
+        groupId = @groupId,
+        snId = @snId,
         where contactId = @contactId
       `);
     res.send(query.recordset);
   } catch (e) {
     console.log(e);
   }
-});
+};
 
-exports.deleteContact = asyncHandler(async (req, res, next) => {
+exports.deleteContact = async (req, res, next) => {
   try {
-    const contactData = new contactModel(req.body);
+    const data = new contactModel(req.body);
     const query = await req.db
       .request()
-      .input('contactId', sql.Int, contactData.contactId).query(`
-      Delete from Call where contactId = @contactId
-      Delete from ContactsGroup where contactId = @contactId
-      Delete from SocialNetwork where contactId = @contactId
+      .input('contactId', sql.Int, data.contactId).query(`
       Delete from Contact where contactId = @contactId
       `);
     res.send(query.recordset);
   } catch (e) {
     console.log(e);
   }
-});
+};
 
 //*Orders
 
-exports.OrderContacts = asyncHandler(async (req, res, next) => {
+exports.OrderContacts = async (req, res, next) => {
   try {
-    const contactData = new sortModel(req.body);
+    const data = new sortModel(req.body);
     const query = await req.db.request().query(`
-        select * from Contact order by ${contactData.SortBy}
+        select * from Contact order by ${data.SortBy}
       `);
     res.send(query.recordset);
   } catch (e) {
     console.log(e);
   }
-});
+};

@@ -4,16 +4,16 @@ const sql = require('mssql');
 const snModel = require('../models/socialNetworkModel.js');
 const sortModel = require('../models/sortModel.js');
 
-exports.getSocialNetworks = asyncHandler(async (req, res, next) => {
+exports.getSocialNetworks = async (req, res, next) => {
   try {
     const query = await req.db.request().query(`select * from SocialNetwork`);
     res.send(query.recordset);
   } catch (e) {
     console.log(e);
   }
-});
+};
 
-exports.getSocialNetwork = asyncHandler(async (req, res, next) => {
+exports.getSocialNetwork = async (req, res, next) => {
   try {
     const snData = new snModel(req.body);
     const query = await req.db
@@ -24,34 +24,32 @@ exports.getSocialNetwork = asyncHandler(async (req, res, next) => {
   } catch (e) {
     console.log(e);
   }
-});
+};
 
-exports.addSocialNetwork = asyncHandler(async (req, res, next) => {
+exports.addSocialNetwork = async (req, res, next) => {
   try {
     const snData = new snModel(req.body);
     const query = await req.db
       .request()
       .input('snId', sql.Int, snData.snId)
       .input('snName', sql.NVarChar, snData.snName)
-      .input('snLink', sql.NVarChar, snData.snLink)
-      .input('contactId', sql.Int, snData.contactId).query(`
+      .input('snLink', sql.NVarChar, snData.snLink).query(`
       Insert into SocialNetwork
       (snId, snName, snLink, contactId)
       values
       (
         @snId,
         @snName,
-        @snLink,
-        @contactId
+        @snLink
       )
     `);
     res.send(query.recordset);
   } catch (e) {
     console.log(e);
   }
-});
+};
 
-exports.updateSocialNetwork = asyncHandler(async (req, res, next) => {
+exports.updateSocialNetwork = async (req, res, next) => {
   try {
     const newData = new snModel(req.body);
     const selectQuery = await req.db
@@ -62,22 +60,19 @@ exports.updateSocialNetwork = asyncHandler(async (req, res, next) => {
     const query = await req.db
       .request()
       .input('snName', sql.NVarChar, newData.snName || oldData.snName)
-      .input('snLink', sql.NVarChar, newData.snLink || oldData.snLink)
-      .input('contactId', sql.Int, newData.contactId || oldData.contactId)
-      .query(`
+      .input('snLink', sql.NVarChar, newData.snLink || oldData.snLink).query(`
       Update SocialNetwork
       Set
       snName = @snName,
-      snLink = @snLink,
-      contactId = @contactId
+      snLink = @snLink
     `);
     res.send(query.recordset);
   } catch (e) {
     console.log(e);
   }
-});
+};
 
-exports.deleteSocialNetwork = asyncHandler(async (req, res, next) => {
+exports.deleteSocialNetwork = async (req, res, next) => {
   try {
     const snData = new snModel(req.body);
     const query = await req.db.request().input('snId', sql.Int, snData.snId)
@@ -88,11 +83,11 @@ exports.deleteSocialNetwork = asyncHandler(async (req, res, next) => {
   } catch (e) {
     console.log(e);
   }
-});
+};
 
 //*Orders
 
-exports.OrderNetworks = asyncHandler(async (req, res, next) => {
+exports.OrderNetworks = async (req, res, next) => {
   try {
     const networkData = new sortModel(req.body);
     const query = await req.db.request().query(`
@@ -102,4 +97,4 @@ exports.OrderNetworks = asyncHandler(async (req, res, next) => {
   } catch (e) {
     console.log(e);
   }
-});
+};

@@ -8,6 +8,8 @@ class contactModel {
     this.email = json.email;
     this.companyName = json.companyName;
     this.companyPosition = json.companyPosition;
+    this.groupId = json.groupId;
+    this.snId = json.snId;
   }
 }
 
