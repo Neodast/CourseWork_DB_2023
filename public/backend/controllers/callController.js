@@ -1,5 +1,4 @@
 const sql = require('mssql');
-const { express, req, res } = require('express');
 
 const callModel = require('../models/callModel.js');
 const sortModel = require('../models/sortModel.js');
@@ -8,9 +7,28 @@ const filterModel = require('../models/filterModel.js');
 exports.getCalls = async (req, res, next) => {
   try {
     const sortData = new sortModel(req.query);
+    const callFilter = new filterModel(req.query);
+    let queryString = `select * from Call `;
+    try {
+      for (let i = 0; i < Object.keys(callFilter.filter).length; i++) {
+        if (i == 0) {
+          queryString +=
+            'where ' +
+            Object.keys(callFilter.filter)[i] +
+            ' = ' + `'` +
+            Object.values(callFilter.filter)[i] + `'`;
+        } else {
+          queryString +=
+            ' and ' +
+            Object.keys(callFilter.filter)[i] +
+            ' = ' + `'` +
+            Object.values(callFilter.filter)[i] + `'`;
+        }
+      }
+    } catch {}
     const query = await req.db
       .request()
-      .query(`select * from Call order by ${sortData.sortBy || 'callId'}`);
+      .query(queryString + ' order by ' + (sortData.sortBy || 'callId'));
     res.send(query.recordset);
   } catch (e) {
     console.log(e);
@@ -92,25 +110,6 @@ exports.deleteCall = async (req, res, next) => {
     const query = await req.db.request().input('callId', sql.Int, data.callId)
       .query(`
       Delete from Call where callId = @callId
-    `);
-    res.send(query.recordset);
-  } catch (e) {
-    console.log(e);
-  }
-};
-
-//*Filters
-
-exports.filterCalls = async (req, res, next) => {
-  try {
-    const sortData = new sortModel(req.query);
-    const callFilters = new filterModel(req.body);
-    const query = await req.db.request().query(`
-      select * from Call
-      where ${Object.keys(callFilters.filter)} = ${
-      callFilters.filter[`${Object.keys(callFilters.filter)}`]
-    }
-      order by ${sortData.sortBy || 'callId'}
     `);
     res.send(query.recordset);
   } catch (e) {

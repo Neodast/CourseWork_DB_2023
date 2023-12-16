@@ -30,10 +30,6 @@ router.put('/call', callController.updateCall);
 
 router.delete('/call', callController.deleteCall);
 
-//*Call Filters
-
-router.get('/calls/filterBy', callController.filterCalls);
-
 //!SocialNetwork CRUDs
 
 router.get('/socialNetworks', socialNetworkController.getSocialNetworks);

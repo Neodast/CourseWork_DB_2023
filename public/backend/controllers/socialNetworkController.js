@@ -2,16 +2,39 @@ const sql = require('mssql');
 
 const snModel = require('../models/socialNetworkModel.js');
 const sortModel = require('../models/sortModel.js');
+const filterModel = require('../models/filterModel.js');
 
 exports.getSocialNetworks = async (req, res, next) => {
   try {
     const sortData = new sortModel(req.query);
-    const query = await req.db.request().query(`select * from SocialNetwork order by ${sortData.sortBy || 'snId'}`);
+    const snFilter = new filterModel(req.query);
+    let queryString = `select * from SocialNetwork `;
+    try {
+      for (let i = 0; i < Object.keys(snFilter.filter).length; i++) {
+        if (i == 0) {
+          queryString +=
+            'where ' +
+            Object.keys(snFilter.filter)[i] +
+            ' = ' + `'` +
+            Object.values(snFilter.filter)[i] + `'`;
+        } else {
+          queryString +=
+            ' and ' +
+            Object.keys(snFilter.filter)[i] +
+            ' = ' + `'` +
+            Object.values(snFilter.filter)[i] + `'`;
+        }
+      }
+    } catch {}
+    const query = await req.db
+      .request()
+      .query(queryString + ' order by ' + (sortData.sortBy || 'snId'));
     res.send(query.recordset);
   } catch (e) {
     console.log(e);
   }
 };
+
 
 exports.getSocialNetwork = async (req, res, next) => {
   try {

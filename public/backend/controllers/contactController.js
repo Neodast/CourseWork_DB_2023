@@ -2,15 +2,33 @@ const sql = require('mssql');
 
 const contactModel = require('../models/contactModel.js');
 const sortModel = require('../models/sortModel.js');
+const filterModel = require('../models/filterModel.js');
 
 exports.getContacts = async (req, res, next) => {
   try {
     const sortData = new sortModel(req.query);
+    const contactFilter = new filterModel(req.query);
+    let queryString = `select * from Contact `;
+    try {
+      for (let i = 0; i < Object.keys(contactFilter.filter).length; i++) {
+        if (i == 0) {
+          queryString +=
+            'where ' +
+            Object.keys(contactFilter.filter)[i] +
+            ' = ' + `'` +
+            Object.values(contactFilter.filter)[i] + `'`;
+        } else {
+          queryString +=
+            ' and ' +
+            Object.keys(contactFilter.filter)[i] +
+            ' = ' + `'` +
+            Object.values(contactFilter.filter)[i] + `'`;
+        }
+      }
+    } catch {}
     const query = await req.db
       .request()
-      .query(
-        `select * from Contact order by ${sortData.sortBy || 'contactId'}`
-      );
+      .query(queryString + ' order by ' + (sortData.sortBy || 'contactId'));
     res.send(query.recordset);
   } catch (e) {
     console.log(e);
