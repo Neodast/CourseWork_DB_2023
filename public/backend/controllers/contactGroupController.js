@@ -1,4 +1,3 @@
-const asyncHandler = require('express-async-handler');
 const sql = require('mssql');
 
 const groupModel = require('../models/contactsGroupModel.js');
@@ -6,7 +5,8 @@ const sortModel = require('../models/sortModel.js');
 
 exports.getContactGroups = async (req, res, next) => {
   try {
-    const query = await req.db.request().query(`select * from ContactGroup`);
+    const sortData = new sortModel(req.query);
+    const query = await req.db.request().query(`select * from ContactGroup order by ${sortData.sortBy || 'groupId'}`);
     res.send(query.recordset);
   } catch (e) {
     console.log(e);
@@ -15,10 +15,10 @@ exports.getContactGroups = async (req, res, next) => {
 
 exports.getContactGroupInfo = async (req, res, next) => {
   try {
-    const groupData = new groupModel(req.body);
+    const data = new groupModel(req.body);
     const query = await req.db
       .request()
-      .input('groupId', sql.Int, groupData.groupId)
+      .input('groupId', sql.Int, data.groupId)
       .query(`select * from ContactGroup where groupId = @groupId`);
     res.send(query.recordset);
   } catch (e) {
@@ -29,12 +29,14 @@ exports.getContactGroupInfo = async (req, res, next) => {
 exports.getContactGroupMembers = async (req, res, next) => {
   try{
     const data = new groupModel(req.body);
+    const sortData = new sortModel(req.query);
     const query = await req.db
       .request()
       .input('groupId', sql.Int, data.groupId)
       .query(`
         select * from Contact c
         where c.groupId = @groupId
+        order by ${sortData.sortBy || 'contactId'}
       `);
     res.send(query.recordset);
   }catch(e){
@@ -44,11 +46,11 @@ exports.getContactGroupMembers = async (req, res, next) => {
 
 exports.addContactGroup = async (req, res, next) => {
   try {
-    const groupData = new groupModel(req.body);
+    const data = new groupModel(req.body);
     const query = await req.db
       .request()
-      .input('groupId', sql.Int, groupData.groupId)
-      .input('groupName', sql.NVarChar, groupData.groupName).query(`
+      .input('groupId', sql.Int, data.groupId)
+      .input('groupName', sql.NVarChar, data.groupName).query(`
       Insert into ContactGroup
       (groupId, groupName, contactId)
       values
@@ -87,26 +89,12 @@ exports.updateContactGroup = async (req, res, next) => {
 
 exports.deleteContactGroup = async (req, res, next) => {
   try {
-    const groupData = new groupModel(req.body);
+    const data = new groupModel(req.body);
     const query = await req.db
       .request()
-      .input('groupId', sql.Int, groupData.groupId).query(`
+      .input('groupId', sql.Int, data.groupId).query(`
       Delete from ContactGroup where groupId = @groupId
     `);
-    res.send(query.recordset);
-  } catch (e) {
-    console.log(e);
-  }
-};
-
-//*Orders
-
-exports.OrderGroups = async (req, res, next) => {
-  try {
-    const groupData = new sortModel(req.body);
-    const query = await req.db.request().query(`
-        select * from ContactGroup order by ${groupData.SortBy}
-      `);
     res.send(query.recordset);
   } catch (e) {
     console.log(e);

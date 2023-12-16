@@ -1,4 +1,3 @@
-const asyncHandler = require('express-async-handler');
 const sql = require('mssql');
 
 const contactModel = require('../models/contactModel.js');
@@ -6,7 +5,12 @@ const sortModel = require('../models/sortModel.js');
 
 exports.getContacts = async (req, res, next) => {
   try {
-    const query = await req.db.request().query('select * from Contact');
+    const sortData = new sortModel(req.query);
+    const query = await req.db
+      .request()
+      .query(
+        `select * from Contact order by ${sortData.sortBy || 'contactId'}`
+      );
     res.send(query.recordset);
   } catch (e) {
     console.log(e);
@@ -129,20 +133,6 @@ exports.deleteContact = async (req, res, next) => {
       .request()
       .input('contactId', sql.Int, data.contactId).query(`
       Delete from Contact where contactId = @contactId
-      `);
-    res.send(query.recordset);
-  } catch (e) {
-    console.log(e);
-  }
-};
-
-//*Orders
-
-exports.OrderContacts = async (req, res, next) => {
-  try {
-    const data = new sortModel(req.body);
-    const query = await req.db.request().query(`
-        select * from Contact order by ${data.SortBy}
       `);
     res.send(query.recordset);
   } catch (e) {

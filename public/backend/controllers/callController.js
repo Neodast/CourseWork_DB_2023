@@ -1,14 +1,16 @@
-const asyncHandler = require('express-async-handler');
 const sql = require('mssql');
+const { express, req, res } = require('express');
 
 const callModel = require('../models/callModel.js');
 const sortModel = require('../models/sortModel.js');
 const filterModel = require('../models/filterModel.js');
-const { query } = require('express');
 
 exports.getCalls = async (req, res, next) => {
   try {
-    const query = await req.db.request().query('select * from Call');
+    const sortData = new sortModel(req.query);
+    const query = await req.db
+      .request()
+      .query(`select * from Call order by ${sortData.sortBy || 'callId'}`);
     res.send(query.recordset);
   } catch (e) {
     console.log(e);
@@ -17,10 +19,10 @@ exports.getCalls = async (req, res, next) => {
 
 exports.getCall = async (req, res, next) => {
   try {
-    const callData = new callModel(req.body);
+    const data = new callModel(req.body);
     const query = await req.db
       .request()
-      .input('callId', sql.Int, callData.callId)
+      .input('callId', sql.Int, data.callId)
       .query('select * from Call where callId = @callId');
     res.send(query.recordset);
   } catch (e) {
@@ -30,14 +32,14 @@ exports.getCall = async (req, res, next) => {
 
 exports.addCall = async (req, res, next) => {
   try {
-    const callData = new callModel(req.body);
+    const data = new callModel(req.body);
     const query = await req.db
       .request()
-      .input('callId', sql.Int, callData.callId)
-      .input('callDate', sql.Date, callData.callDate)
-      .input('isResponce', sql.Bit, callData.isResponce)
-      .input('callTime', sql.NVarChar(8), callData.callTime)
-      .input('contactId', sql.Int, callData.contactId).query(`
+      .input('callId', sql.Int, data.callId)
+      .input('callDate', sql.Date, data.callDate)
+      .input('isResponce', sql.Bit, data.isResponce)
+      .input('callTime', sql.NVarChar(8), data.callTime)
+      .input('contactId', sql.Int, data.contactId).query(`
       insert into Call
       (callId, callDate, isResponce, callTime, contactId)
       values
@@ -86,10 +88,9 @@ exports.updateCall = async (req, res, next) => {
 
 exports.deleteCall = async (req, res, next) => {
   try {
-    const callData = new callModel(req.body);
-    const query = await req.db
-      .request()
-      .input('callId', sql.Int, callData.callId).query(`
+    const data = new callModel(req.body);
+    const query = await req.db.request().input('callId', sql.Int, data.callId)
+      .query(`
       Delete from Call where callId = @callId
     `);
     res.send(query.recordset);
@@ -98,40 +99,18 @@ exports.deleteCall = async (req, res, next) => {
   }
 };
 
-//*Orders
-
-exports.OrderCalls = async (req, res, next) => {
-  try {
-    const callData = new sortModel(req.body);
-    const query = await req.db.request().query(`
-        select * from Call order by ${callData.SortBy}
-      `);
-    res.send(query.recordset);
-  } catch (e) {
-    console.log(e);
-  }
-};
-
 //*Filters
 
-exports.FilterCalls = async (req, res, next) => {
+exports.filterCalls = async (req, res, next) => {
   try {
+    const sortData = new sortModel(req.query);
     const callFilters = new filterModel(req.body);
     const query = await req.db.request().query(`
-      DECLARE @i INT = 1;
-
-      WHILE @i <= ${callFilters.filter.length}
-        BEGIN
-          PRINT (@i);
-          SET @i = @i + 10;
-
-          IF @i = 30 BREAK;
-        END;
-
       select * from Call
       where ${Object.keys(callFilters.filter)} = ${
       callFilters.filter[`${Object.keys(callFilters.filter)}`]
     }
+      order by ${sortData.sortBy || 'callId'}
     `);
     res.send(query.recordset);
   } catch (e) {

@@ -1,6 +1,6 @@
 class sortModel {
   constructor(json) {
-    this.SortBy = json.SortBy;
+    this.sortBy = json.sortBy;
   }
 }
 
