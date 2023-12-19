@@ -15,14 +15,18 @@ exports.getSocialNetworks = async (req, res, next) => {
           queryString +=
             'where ' +
             Object.keys(snFilter.filter)[i] +
-            ' = ' + `'` +
-            Object.values(snFilter.filter)[i] + `'`;
+            ' = ' +
+            `'` +
+            Object.values(snFilter.filter)[i] +
+            `'`;
         } else {
           queryString +=
             ' and ' +
             Object.keys(snFilter.filter)[i] +
-            ' = ' + `'` +
-            Object.values(snFilter.filter)[i] + `'`;
+            ' = ' +
+            `'` +
+            Object.values(snFilter.filter)[i] +
+            `'`;
         }
       }
     } catch {}
@@ -31,20 +35,21 @@ exports.getSocialNetworks = async (req, res, next) => {
       .query(queryString + ' order by ' + (sortData.sortBy || 'snId'));
     res.send(query.recordset);
   } catch (e) {
+    res.send(400);
     console.log(e);
   }
 };
 
-
 exports.getSocialNetwork = async (req, res, next) => {
   try {
-    const data = new snModel(req.body);
+    const data = new snModel(req.query);
     const query = await req.db
       .request()
       .input('snId', sql.Int, data.snId)
       .query(`select * from SocialNetwork where snId = @snId`);
     res.send(query.recordset);
   } catch (e) {
+    res.send(400);
     console.log(e);
   }
 };
@@ -66,8 +71,9 @@ exports.addSocialNetwork = async (req, res, next) => {
         @snLink
       )
     `);
-    res.send(query.recordset);
+    res.send(200);
   } catch (e) {
+    res.send(400);
     console.log(e);
   }
 };
@@ -89,21 +95,23 @@ exports.updateSocialNetwork = async (req, res, next) => {
       snName = @snName,
       snLink = @snLink
     `);
-    res.send(query.recordset);
+    res.send(200);
   } catch (e) {
+    res.send(400);
     console.log(e);
   }
 };
 
 exports.deleteSocialNetwork = async (req, res, next) => {
   try {
-    const data = new snModel(req.body);
+    const data = new snModel(req.query);
     const query = await req.db.request().input('snId', sql.Int, data.snId)
       .query(`
       Delete from SocialNetwork where snId = @snId
     `);
-    res.send(query.recordset);
+    res.send(200);
   } catch (e) {
+    res.send(400);
     console.log(e);
   }
 };

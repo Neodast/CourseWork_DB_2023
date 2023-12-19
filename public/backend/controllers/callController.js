@@ -31,19 +31,21 @@ exports.getCalls = async (req, res, next) => {
       .query(queryString + ' order by ' + (sortData.sortBy || 'callId'));
     res.send(query.recordset);
   } catch (e) {
+    res.send(400);
     console.log(e);
   }
 };
 
 exports.getCall = async (req, res, next) => {
   try {
-    const data = new callModel(req.body);
+    const data = new callModel(req.query);
     const query = await req.db
       .request()
       .input('callId', sql.Int, data.callId)
       .query('select * from Call where callId = @callId');
     res.send(query.recordset);
   } catch (e) {
+    res.send(400);
     console.log(e);
   }
 };
@@ -69,8 +71,9 @@ exports.addCall = async (req, res, next) => {
       @contactId
       )
     `);
-    res.send(query.recordset);
+    res.send(200);
   } catch (e) {
+    res.send(400);
     console.log(e);
   }
 };
@@ -98,21 +101,23 @@ exports.updateCall = async (req, res, next) => {
       callTime = @callTime,
       contactId = @contactId
     `);
-    res.send(query.recordset);
+    res.send(200);
   } catch (e) {
+    res.send(400);
     console.log(e);
   }
 };
 
 exports.deleteCall = async (req, res, next) => {
   try {
-    const data = new callModel(req.body);
+    const data = new callModel(req.query);
     const query = await req.db.request().input('callId', sql.Int, data.callId)
       .query(`
       Delete from Call where callId = @callId
     `);
-    res.send(query.recordset);
+    res.send(200);
   } catch (e) {
+    res.send(400);
     console.log(e);
   }
 };

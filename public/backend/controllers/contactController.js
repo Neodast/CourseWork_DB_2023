@@ -15,14 +15,18 @@ exports.getContacts = async (req, res, next) => {
           queryString +=
             'where ' +
             Object.keys(contactFilter.filter)[i] +
-            ' = ' + `'` +
-            Object.values(contactFilter.filter)[i] + `'`;
+            ' = ' +
+            `'` +
+            Object.values(contactFilter.filter)[i] +
+            `'`;
         } else {
           queryString +=
             ' and ' +
             Object.keys(contactFilter.filter)[i] +
-            ' = ' + `'` +
-            Object.values(contactFilter.filter)[i] + `'`;
+            ' = ' +
+            `'` +
+            Object.values(contactFilter.filter)[i] +
+            `'`;
         }
       }
     } catch {}
@@ -31,19 +35,21 @@ exports.getContacts = async (req, res, next) => {
       .query(queryString + ' order by ' + (sortData.sortBy || 'contactId'));
     res.send(query.recordset);
   } catch (e) {
+    res.send(400);
     console.log(e);
   }
 };
 
 exports.getContact = async (req, res, next) => {
   try {
-    const data = new contactModel(req.body);
+    const data = new contactModel(req.query);
     const query = await req.db
       .request()
       .input('contactId', sql.Int, data.contactId)
       .query(`SELECT * from Contact where contactId = @contactId`);
     res.send(query.recordset);
   } catch (e) {
+    res.send(400);
     console.log(e);
   }
 };
@@ -79,8 +85,9 @@ exports.addContact = async (req, res, next) => {
         @snId
         )
       `);
-    res.send(query.recordset);
+    res.send(200);
   } catch (e) {
+    res.send(400);
     console.log(e);
   }
 };
@@ -135,25 +142,27 @@ exports.updateContact = async (req, res, next) => {
         companyName = @companyName,
         companyPosition = @companyPosition,
         groupId = @groupId,
-        snId = @snId,
+        snId = @snId
         where contactId = @contactId
       `);
-    res.send(query.recordset);
+    res.send(200);
   } catch (e) {
+    res.send(400);
     console.log(e);
   }
 };
 
 exports.deleteContact = async (req, res, next) => {
   try {
-    const data = new contactModel(req.body);
+    const data = new contactModel(req.query);
     const query = await req.db
       .request()
       .input('contactId', sql.Int, data.contactId).query(`
       Delete from Contact where contactId = @contactId
       `);
-    res.send(query.recordset);
+    res.send(200);
   } catch (e) {
+    res.send(400);
     console.log(e);
   }
 };
